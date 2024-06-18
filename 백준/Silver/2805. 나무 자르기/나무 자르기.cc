@@ -30,10 +30,7 @@ int main(){
             long long cost = v[i]-mid;
             if (cost > 0) logs += cost;
         }
-        if ((logs-target)>= 0 &&(logs-target) < 0) {
-            cout << low;
-            return 0;
-        }
+
         if (logs >= target) {
             low = mid + 1;
         } else if (logs < target) {
