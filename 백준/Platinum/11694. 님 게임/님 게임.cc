@@ -25,18 +25,8 @@ int main(){
         if(dol[i] != 1) isOne = false;
         result = (result^(ll)dol[i]);
     }   
+    result ^= isOne;
 
-    
-
-    if(isOne) {
-        result ^= 1;
-        if(result != 0) {
-            cout << "koosaga";
-        } else {
-            cout << "cubelover";
-        }
-
-    } else
     if(result != 0) {
         cout << "koosaga";
     } else {
