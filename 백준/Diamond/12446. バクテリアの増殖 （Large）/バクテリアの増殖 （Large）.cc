@@ -17,8 +17,6 @@ int main() {
             }
         }
     }
-
-
 	int T;
 	scanf("%d", &T);
 	int A, B, C;
@@ -30,16 +28,11 @@ int main() {
 	return 0;
 }
 
-int power_modular (int X, int Y, int M) {
-	int answer = 1;
-	while(Y) {
-		if (Y & 1) {
-			answer = answer * X % M;
-		}
-		X = X * X % M;
-		Y >>= 1;
-	}
-	return answer;
+int power_modular(int a, int b, int MMM) { 
+    int ret = 1; 
+    for (; b; b >>= 1, a = (a * a) % MMM)
+        if (b & 1)ret = (ret * a) % MMM; 
+    return ret; 
 }
 
 int bacteria_modular (int A, int B, int C) {
