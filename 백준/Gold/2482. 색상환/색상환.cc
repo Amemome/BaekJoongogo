@@ -34,7 +34,7 @@ int main() {
         com[i][0] = 1;
     } 
     
-    for(int i = 2; i < 1001; i++) {
+    for(int i = 2; i < n; i++) {
         for(int j = 2; j < i; j++) {
             com[i][j] = (com[i-1][j] + com[i-1][j-1]) % MOD;
         }
