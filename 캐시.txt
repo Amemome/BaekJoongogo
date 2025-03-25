@@ -1,0 +1,675 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+
+/*
+인오더 왼 중 오
+프리오더 중 왼 오
+포스트오더 왼 오 중
+
+인오더 첫번째가 맨왼쪾?
+포스트 오더 마지막이 루트노드.
+
+둘다 왼쪾부터 시작하니, 같은걸 가리키는건 명확. 왼쪽 노드가 있을 때 부모노드가 있다는 것은 자명.
+오른쪽 노드는 모르겠네~
+*/
+
+struct node{
+    int par,left,right;
+};
+node tre[n+1];
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    
+    int n; cin >> n;
+    
+
+    int inorder[n+1] = {};
+    int postorder[n+1] = {};
+    for(int i = 0; i < n; i++) {
+        cin >> inorder[i]
+    }
+    for(int i = 0; i < n; i++) {
+        cin >> postorder[i]
+    }
+    tre[inorder[0]] = {-1,-1,}
+
+    return 0;
+}
+
+
+
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+int n,k;
+vector<vector<int>> tree(100001);
+vector<int> heal(100001);
+vector<int> visit(100001,false);
+
+int search(int u) {
+    int healthCnt = 0;
+    visit[u] = true;
+    int vcnt = 0;
+    for(auto v : tree[u]){
+        if(visit[v] == 1) continue;
+        int sub = search(v);
+        if(sub == k) {
+            cnt++;
+            continue;
+        }
+        healthCnt += sub;
+        if(healthCnt >= k) {
+            cnt++;
+            healthCnt = 0;
+        }
+    }
+
+    return healthCnt + heal[u];
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+
+    cin >> n >> k;
+
+    for(auto x : heal) cin >> x;
+
+    for(int i = 0; i < n-1; i++) {
+        int u,v ; cin >> u >> v;
+        u--;v--;
+        tree[u].emplace_back(v);
+        tree[v].emplace_back(u);
+    }
+
+
+   
+
+    return 0;
+}
+
+
+
+
+#include <bits/stdc++.h>
+
+using namespace std;
+#define mod 1000000007
+
+/*
+최댓값이 너무 큰 경우에 안돈다.
+*/
+
+vector<int> failure(string & s) {
+    vector<int> f(s.size());
+    int j = 0;
+    for(int i = 1; i < s.size(); i++) {
+        while(j>0 && s[i] != s[j]) j = f[j-1];
+        if(s[i] == s[j]) f[i] = ++j;
+    } return f;
+}
+
+string p = "1100";
+vector<int> f = failure(p);
+
+int kmp(string s,set<int> &a,int start, int end) {
+    int cnt = 0;
+    int j = 0;
+    for(int i = start; i < end && i < s.size(); i++) {
+        while(j>0 && s[i] != p[j]) j = f[j-1];
+        if(s[i] == p[j]) j++;
+        if(j == p.size()) {
+            a.insert(i-j+1);
+            cnt++;
+        }
+    }
+    return cnt;
+}
+
+typedef long long ll;
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    int z; cin >> z;
+    
+    //kmp 로 1-base 인덱스로 위치 찾아서 배열에 넣음.
+    while(z--) {
+        string s; cin >> s;
+        int n; cin >> n;
+        set<int> a; //1100 가 나타나는 index 를 저장합니다.
+        if(s.size() < 4) {
+            while(n--){
+                int q,b; cin >> q >> b;
+                cout << "NO\n";
+            }
+            continue;}
+
+        kmp(s,a,0,s.size()); 
+        
+        while(n--) { //쿼리처리
+            int q,b; cin >> q >> b;
+            q--;
+            s[q] = (char) b+'0';
+
+            for(int j = q-3; j <= q; j++) {
+                if(0 <= j && j <= s.size()-4) {
+
+                    if(s.substr(j,4) == "1100") {
+                        a.insert(j);
+                    } else {
+                        a.erase(j);
+                    }
+                }
+            }
+            
+            cout << (a.empty() ? "NO" : "YES") << '\n';
+        }
+    }
+    return 0;
+}
+
+
+--------
+
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<vector<int>> tree(100001);
+vector<int> visited(100001);
+int dp[20][100001];
+int n;
+
+void dfs(int node,int color) {
+    if(dp[color][node] != -1) return dp[color][node];
+    visited[node] = true;
+    dp[color][node] = color;
+    bool isLeaf = true;
+    for(auto c : tree[node]) {
+        if(visited[c]) continue;
+        isLeaf = false;
+        int lm = INT_MAX;
+        for(int i = 1; i < 20; i++) {
+            if(i==color) continue;
+            lm = min(dp[i][c],lm); 
+        }  
+    }
+}
+
+/*
+밑으로 전개하면서 리프노드면 1을 넣음.
+이후에는 자식노드들의 dp 값을 보고 MEX 합시다. 이게안되네 ㅜㅜ
+
+*/
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    memset(dp,-1,sizeof(dp));
+    cin >> n;
+    int u,v;
+    for(int i = 0 ; i < n-1; i++) {
+        cin >> u >> v;
+        tree[u].push_back(v);
+        tree[v].push_back(u);
+    }
+
+    dfs(v);
+    cout << sum[v];
+
+}
+
+
+#include <bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+
+#define MOD 1000000003
+//1000 1000 ㄱㄴ
+vector<vector<ll>> com(1001,vector<ll>(1001)); // n 번째에 k색을 선택.방법수.
+
+// 10000001 같은것도 카운트 해서... 그냥 연속되지 않는 1이 있는 수를 다 카운트함.
+// nCk 는 구할 수 있음.
+// 11100 등등. 110 111 이런거 싹다 없애주면. 11 을 하나로 묶고, 111을 하나로 묶으면 됩니다!
+//nCk - n-1Ck-1 - n-2Ck-2 .... 하면 됨.
+// 4C2 - 3C1 
+
+// 식 : nCk - n-1Ck-1 - n-2Ck-2 .... - n-aC1 까지 ? 하면 됨. 그럼 모든 조합의 값을
+//DP로 계산해놓으면 됩니다.
+
+// 1 2 3 4 5 6 7
+//   1 
+// 100000001 처리를 어떻게 해야하지.
+// 1000000010 앞에 0 뒤에 0 붙이는걸로 해 ? 이전거를 구한 다음에 앞0 뒤0 붙이는 경우로?
+// 0101
+
+//앞뒤가 문제죠.. 앞뒤가 10, 01, 00인 경우가 가능할터
+// 1이랑 0을 고정한 뒤, 먹기, 이후, 중복제거만 하면 된다.
+
+//n 개가 있을 때, 2개를 고정. n-2Ck-1 개 이거 두번돌리 ㄱㄱ.
+// 그리고 n-2Ck 이거도 한번 돌리 ㄱㄱ.
+
+//중복제거가 뭔가 잘못됏다.
+
+// 11 -> 2     1010 01100 00110 00011
+//             11100 01110 00111
+
+//n-1Ck-1 으로 돌리면 되는거 아님..?
+// 01010   01100   011100
+// 011010  010110 대충 *2 하면 된다는 뜻.
+// 그러면 01100 같은 경우는 하나 밖에 안나오는데? 어 그러면 n-2Ck-2 해서 빼줘.
+//        01110 같은 경우는 어떡하려고.
+
+// 11 을 1 하나로 묶어서 계산하낟. n-1Ck-1 을 계산합니다. 00101010101 정도가 될텐데, 각각이 2가 될 수
+//있기 때문에 k를 곱해줍니다. 즉, (n-1Ck-1 * k-1) 을 빼주면 될것 같아요.
+// 그렇다면 ? 0011010101 으로 또 겹쳐버린 상태가 나오면 어떡하죠 ? 몇 개가 붙어있는지 어떻게 알아요 !
+// 그러면 3개 뭉친거를 계산합시다. n-2Ck-2 을 한번 빼주면 될것 같아요!
+//        0011101010 이렇게 4개가 뭉치면...
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    int n,k; cin >> n >> k;
+
+    for(int i = 1; i < 1001; i++) {
+        com[i][i] = 1;
+        com[i][1] = i;
+        com[i][0] = 1;
+    } 
+    
+    for(int i = 2; i < 1001; i++) {
+        for(int j = 2; j < i; j++) {
+            com[i][j] = (com[i-1][j] + com[i-1][j-1]) % MOD;
+        }
+    }
+    if(k == 1) {
+        cout << n;
+        return 0;
+    }
+
+    long long result = (com[n-2][k-1] * 2 + com[n-2][k])%MOD;
+    cout << result << endl;
+
+    cout << result - com[n-1][k-1] * (k-1) + com[n-2][k-2] * (k-2);
+
+    // n--; k--;
+    // long long exsum = com[n][k] * k;
+    // n--; k--;
+    // while(k > 0){
+    //     exsum -= com[n--][k--];
+    //     exsum = (exsum+MOD) % MOD;
+    // }   
+    // cout << (result - exsum) % MOD;
+    
+    
+
+}
+
+
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    int tt; cin >> tt;
+    vector<int> trash(100001);
+    vector<pair<int,int>> query(tt);
+    int pos = 0;
+    ll result = 0;
+
+    for(int i = 0; i < tt; i++) {
+        int a=0,b=0;
+        cin >> a;
+        if(a==1) cin >> b;
+        query[i] = {a,b};
+    }
+    int idx = 0;
+    for(auto qry : query) { 
+        if(qry.first==1) { 
+            trash[idx++] = qry.second;
+        } else {                                         
+            sort(trash.begin(),trash.begin()+idx);                                                                   
+            int i = lower_bound(trash.begin(),trash.begin()+idx,pos) - trash.begin();
+            if(it == trash.end()) it = prev(it);
+
+            while(i != 0 && i != idx) {
+                int left = i - 1;
+                int right = i ;
+        
+                if(abs(pos-*left) > abs(pos-*right)) {
+                    result += abs(pos-*right);
+                    pos = *right;
+                    it = next(it);
+                } else {
+                    result += abs(pos-*left);
+                    pos = *left;
+                    it = prev(it);
+                }
+            }
+            if(it == trash.begin()) {
+                result += abs(pos-*prev(trash.end()));
+                pos = *prev(trash.end());
+            } else
+            if(it == prev(trash.end())) {
+                result += abs(pos-*trash.begin());
+                pos = *trash.begin();
+            }
+            idx = 0;
+        }
+    }
+    cout << result; 
+}
+
+
+
+
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    int tt; cin >> tt;
+    vector<int> trash;
+    vector<pair<int,int>> query(tt);
+    int pos = 0;
+    ll result = 0;
+
+    for(int i = 0; i < tt; i++) {
+        int a=0,b=0;
+        cin >> a;
+        if(a==1) cin >> b;
+        query[i] = {a,b};
+    }
+    
+    for(auto qry : query) { 
+        if(qry.first==1) {
+            trash.push_back(qry.second);
+        } else {                                         
+            sort(trash.begin(),trash.end());                                                                   
+            auto it = lower_bound(trash.begin(),trash.end(),pos);
+            if(it == trash.end()) it = prev(it);
+
+            auto left = it;
+            auto right = it;
+            
+            if (trash.begin() < it && it < prev(trash.end())) {
+                left = prev(it);
+                right = it;
+            }
+
+            while(left != trash.begin() && right != prev(trash.end())) {
+                if(abs(pos-*left) > abs(pos-*right)) {
+                    result += abs(pos-*right);
+                    pos = *right;
+                    right = next(right);
+                } else {
+                    result += abs(pos-*left);
+                    pos = *left;
+                    left = prev(left);
+                }
+            }
+
+            if(left == trash.begin()) {
+                result += abs(pos-*prev(trash.end()));
+                pos = *prev(trash.end());
+            } else
+            if(right == prev(trash.end())) {
+                result += abs(pos-*trash.begin());
+                pos = *trash.begin();
+            }
+
+            trash.clear();
+        }
+    }
+    cout << result; 
+}
+
+
+--다익스트라--
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+
+vector<pair<int,int>> adj[1001];
+int d[1001];
+int pre[1001];
+const int INF = INT_MAX;
+
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    int v,e,st,ed; cin >> v >> e;
+    fill(d,d+v+1,INF);
+    while(e--) {
+        int u , v , w;
+        cin >> u >> v >> w;
+        adj[u].push_back({w,v});
+    }
+    cin >> st >> ed;
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+    d[st] = 0;
+    pq.push({d[st],st});
+    while(!pq.empty()){
+        auto cur = pq.top(); pq.pop();
+        if(d[cur.second]!= cur.first) continue; //가중치가 같지 않음?
+        for(auto nxt : adj[cur.second]) {
+            if(d[nxt.second] <= d[cur.second] + nxt.first) continue;
+            d[nxt.second] = d[cur.second] + nxt.first;
+            pre[nxt.second] = cur.second;
+            pq.push({d[nxt.second],nxt.second});
+        }
+    }
+    cout << d[ed] << endl;
+    vector<int> path;
+    while(ed) {
+        path.push_back(ed);
+        ed = pre[ed];
+    }
+    cout << path.size() << endl;
+    reverse(path.begin(),path.end());
+    for(auto a : path) cout << a << ' ';
+
+}
+
+
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long int ll;
+typedef unsigned long long int ull;
+typedef long double ldb;
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+ll mod=1e9+7;
+
+// sigma i = S -> E 인데 N/i 의 값을 구한다.
+// 10^6 ?
+// 중간은 sqrt 로 구해지는데 처음이랑 끝이 구간 걸치는게 문제네.
+
+int main(void)
+{
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+
+
+    int tt; cin >> tt;
+    while(tt--) {
+        ll n,s,e; cin >> n >> s >> e; //구간 s 부터 e 까지 구해야하는데
+        ll sum = 0;
+        int i = 0,j = 0;
+        for(i = s; i <= (int) sqrt(n); i++) { //일단 sqrt(n) 까지는 1씩더해도 ㄱㅊ. 
+            j = n/(n/i);
+            sum += n/i*(j-i+1);
+        }
+        if(s < sqrt(n))
+        for(i = (int) sqrt(n)+1; i <= e; i=j+1) { //일단 sqrt(n) 까지는 1씩더해도 ㄱㅊ. 
+            j = n/(n/i);
+            sum += n/i*(j-i+1);
+        }
+
+        cout << sum;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+//// problem G
+
+#include <bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;
+
+ll pw(ll a,ll b) {ll ret=1;
+    while(b){
+        if(b&1) ret *= a;
+        a*=a; b>>=1;
+    } return ret;}
+
+#define SZ 1000010
+
+vector<int> prime;
+int phi[SZ+1],mu[SZ+1],sigma[SZ+1],tau[SZ+1],e[SZ+1],sp[SZ+1];
+void sieve() { //tau=약수의개수,sigma=약수의합,sp=최소소인수
+    phi[1] = mu[1] =tau[1]=sigma[1] =1;
+    for(int i=2; i<=SZ; i++) {
+        if(!sp[i]){
+            prime.push_back(i);
+            e[i]=1;phi[i]=i-1;mu[i]=-1;tau[i]=2;sigma[i]=i+1;
+        }
+        for(auto j:prime){
+            if(i*j >= SZ)break; sp[i*j] = j;
+            if(i%j==0) {
+                e[i*j] = e[i]+1; phi[i*j] = phi[i]*j; mu[i*j]=0;
+                tau[i*j] = tau[i]/e[i*j]*(e[i*j]+1);
+                sigma[i*j] = sigma[i]*(j-1)/
+                (pw(j,e[i*j]-1))*(pw(j,e[i*j]+1)-1)/(j-1);
+                break; //시그마는오버플로우주의
+            }
+            e[i*j]=1; phi[i*j] = phi[i] * phi[j]; mu[i*j] = mu[i] * mu[j];
+            tau[i*j] = tau[i] * tau[j]; sigma[i*j]=sigma[i]*sigma[j];
+        }
+    }
+}
+
+const int MOD = 998244353;
+
+int main() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    sieve();
+
+    int n; cin >> n;
+
+    vector<int> arr(n);
+    for(int i = 0; i < n; i++) cin >> arr[i];
+    const int mxm = *max_element(arr.begin(),arr.end())+1;
+    vector<vector<int>> divs(mxm+1);
+    for(int i = 2; i < mxm; i++) {
+        for(int j = i; j < mxm; j+=i) {
+            divs[j].push_back(i);
+        }
+    }
+    
+    vector<int> dp(n+1);
+    vector<int> sum(mxm+1);
+    
+    dp[0] = 1;
+    for(auto x : divs[arr[0]]) {
+        sum[x] += 1;
+    }
+    for(int i = 1; i < n; i++) {
+        for(auto x : divs[arr[i]]) {
+            dp[i] += -mu[x] * sum[x];
+        }
+        dp[i] %= MOD;
+        for(auto x : divs[arr[i]]) {
+            sum[x] += dp[i];
+        }
+    }
+    cout << dp[n-1];
+}
+
+
+
+
+
+
+
+#include <bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+/*
+scc 는 사이클의 더 확장된 개념이라고 볼 수 있다. 유향 그래프에서, 모든 정점에 대해서 서로도달가능한
+최대부분 그래프를 의미한다. 방향 비순환 그래프로 그래프를 압축할 수 있음.*/
+
+//정점x부터 dfs하면서 scc 찾기.
+int findscc(int x, int &id,int (& P)[], bool (& finished)[],
+stack<int> &S, vector<vector<int>> &adj,vector<vector<int>> &scc) {
+    P[x] = ++id;  S.push(x);  int parent = P[x];
+    //정점x와 인접한 정점들의 부모노드를결정. 사이클이 돌면 호출멈추기.
+    for(auto y : adj[x]) { 
+        if(P[y]==0) parent = min(parent,findscc(y,id,P,finished,S,adj,scc));
+        else if(!finished[y]) parent = min(parent,P[y]);
+    } //같은 scc들을 가장작은 정점의 값으로 같은 소속임을 나타냄.
+    if(parent == P[x]) {
+        vector<int> SCC;
+        while(true) {
+            int y = S.top();
+            S.pop();
+            SCC.push_back(y);
+            finished[y] = true;
+            if(y==x) break;
+        }
+        scc.push_back(SCC);
+    } //P[x] 을 업데이트 함으로써 P배열을 확인하면 같은 scc에 속한 것들을 알 수 있다.
+    return P[x] = parent; //원래는 parent 만 있음
+} //P[x] == 0인 정점에 대해서만 탐색을 실시
+
+int main(void)
+{
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    int n,m; 
+    cin >> n >> m;
+    int id = 0; int P[2n+1] = {0};//id:정점번호,부모체크
+    bool finished[2n+1] = {0};//scc에 속한 정점체크
+    vector<vector<int>> adj(2n+1); //정점x 인접그래프
+    stack<int> S; //dfs에 사용하는 스택
+    vector<vector<int>> scc; //scc 저장.
+
+    for(int i = 0; i < m; i++) {
+        int u,v; cin >> u >> v;
+        if(u<0) u = 20000-u;
+        if(v<0) v = 20000-v;
+        adj[u].push_back(v);
+    }
+    for(int i = 1; i <= n; i++) {
+        if(P[i]==0) findscc(i,id,P,finished,S,adj,scc);
+    }
+    
+    return 0;
